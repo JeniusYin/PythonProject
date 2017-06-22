@@ -4,10 +4,12 @@ from collections import defaultdict
 
 # 用户行为
 actions = ['Up', 'Left', 'Down', 'Right', 'Restart', 'Exit']
-# 用户有效输入
+# 用户有效输入 ord()将字符转换为ASCII码
+# [87, 65, 83, 68, 82, 81, 119, 97, 115, 100, 114, 113]
 letter_codes = [ord(ch) for ch in 'WASDRQwasdrq']
-# 关联输入与行为
+# 关联输入与行为 zip函数接受任意多个（包括0个和1个）list作为参数，返回一个tuple列表
 actions_dict = dict(zip(letter_codes, actions * 2))
+#  {65: 'Left', 83: 'Down', 68: 'Right', 97: 'Left', 119: 'Up', 114: 'Restart', 81: 'Exit', 82: 'Restart', 115: 'Down', 113: 'Exit', 87: 'Up', 100: 'Right'}
 
 
 def get_user_action(keyboard):
@@ -37,8 +39,11 @@ class Gamefield(object):
         self.highscore = 0
         self.reset()
 
+# 在棋盘上随机生成一个2或4
     def spawn(self):
         new_element = 4 if randrange(100) > 89 else 2
+        # choice() 方法返回一个列表，元组或字符串的随机项。
+        # 返回一个位置坐标 (3,1)，将此位置的值设为2或4
         (i, j) = choice([(i, j) for i in range(self.width)
                          for j in range(self.height) if self.field[i][j] == 0])
         self.field[i][j] = new_element
@@ -47,6 +52,7 @@ class Gamefield(object):
         if self.score > self.highscore:
             self.highscore = self.score
         self.score = 0
+        # [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
         self.field = [[0 for i in range(self.width)]
                       for j in range(self.height)]
         self.spawn()
@@ -106,6 +112,7 @@ class Gamefield(object):
 
         def cast(string):
             screen.addstr(string + '\n')
+
             # 绘制水平分割线
 
         def draw_hor_separator():
@@ -116,6 +123,7 @@ class Gamefield(object):
             cast(separator[draw_hor_separator.counter])
             draw_hor_separator.counter += 1
 
+            # 只将大于0的数字画出
         def draw_row(row):
             cast(''.join('|{: ^5} '.format(num) if num >
                          0 else '|      ' for num in row) + '|')
@@ -208,7 +216,7 @@ def main(stdscr):
     }
 
     curses.use_default_colors()
-    game_field = Gamefield(win=32)
+    game_field = Gamefield(win=512)
 
     state = 'Init'
 
